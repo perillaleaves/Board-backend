@@ -3,17 +3,11 @@ package mini.board.domain.user;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
-
-    @PersistenceContext
-    private EntityManager em;
 
     private final UserRepository userRepository;
 
@@ -23,22 +17,35 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
-        LocalDateTime date = LocalDateTime.now();
-        user.setCreatedAt(date);
+        validate(user);
 
-        Optional<User> userByLoginId = userRepository.findByLoginId(user.getLoginId());
-        if (userByLoginId.isPresent() ||
-                user.getLoginId().length() < 8 ||
-                user.getPassword().length() < 8 ||
-                user.getName().length() < 0 ||
-                user.getPhoneNum().length() < 0 ||
-                user.getEmail().length() < 0) {
-            return null;
-        } else {
-            User saveUser = userRepository.save(user);
-            return saveUser;
+        user.setCreatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
+    private void validate(User user) {
+        // 0.0001ms
+        if (user.getLoginId().length() < 8) {
+            throw new Error("Id length must be greater than 8");
+        }
+        if (user.getPassword().length() > 8) {
+            throw new Error("Password length must be less than 8");
+        }
+        if (user.getName().length() > 3) {
+            throw new Error("Name length must be less than 3");
+        }
+        if (user.getPhoneNum().length() > 11 || user.getPhoneNum().length() < 12) {
+            throw new Error("Phone number length must be 11");
+        }
+        if (user.getEmail().length() < 20) {
+            throw new Error("Email length must be greater than 20");
         }
 
+        // 100ms
+        Optional<User> userByLoginId = userRepository.findByLoginId(user.getLoginId());
+        if (userByLoginId.isPresent()) {
+            throw new Error("이미 존재하는 아이디 입니다.");
+        }
     }
 
 
