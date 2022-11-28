@@ -27,6 +27,14 @@ public class UserService {
         return saveUser;
     }
 
+    @Transactional
+    public Optional<User> findByLoginId(User user) {
+
+        return userRepository.findAll().stream()
+                .filter(u -> u.getLoginId().equals(user.getLoginId()))
+                .findFirst();
+    }
+
     private void validate(User user) {
         if (user.getLoginId().length() < 8) {
             throw new Error("아이디를 8글자 이상 입력해주세요.");
