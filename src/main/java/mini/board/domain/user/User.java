@@ -97,6 +97,11 @@ public class User {
     public User() {
     }
 
+    public User(String loginId, String password) {
+        this.loginId = loginId;
+        this.password = password;
+    }
+
     public User(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.loginId = loginId;
