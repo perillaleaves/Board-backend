@@ -1,18 +1,19 @@
 package mini.board.domain.login;
 
 import mini.board.domain.user.User;
+import mini.board.domain.user.UserDTO;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-@Controller
+@RestController
 public class LoginController {
 
     private final LoginService loginService;
@@ -21,16 +22,23 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @PostMapping("/login")
-    public Map<String, Object> signIn(@ModelAttribute LoginDTO loginDTO, HttpServletRequest request) {
+    @PostMapping("/signin")
+    public Map<String, Object> login(@ModelAttribute UserDTO userDTO, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        User loginUser = loginService.signIn(new User(loginDTO.getLoginId(), loginDTO.getPassword()));
+        Optional<User> loginUser = loginService.signIn(new User(userDTO.getLoginId(), userDTO.getPassword()));
 
-        HttpSession session = request.getSession();
-        session.setAttribute("loginUser", loginUser);
+        if (loginUser != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("loginUser", loginUser);
 
-        map.put("loginUser", loginUser);
+            map.put("result", "login");
+        } else {
+            map.put("result", "fail");
+        }
+
         return map;
     }
+
+
 
 }
