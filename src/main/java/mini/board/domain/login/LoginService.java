@@ -4,6 +4,8 @@ import mini.board.domain.user.User;
 import mini.board.domain.user.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoginService {
 
@@ -13,10 +15,10 @@ public class LoginService {
         this.userService = userService;
     }
 
-    public User signIn(User user) {
-        return userService.findByLoginId(user)
+    public Optional<User> signIn(User user) {
+        return Optional.ofNullable(userService.findByLoginId(user)
                 .filter(m -> m.getPassword().equals(user.getPassword()))
-                .orElse(null);
+                .orElse(null));
     }
 
 }
