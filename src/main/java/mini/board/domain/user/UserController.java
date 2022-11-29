@@ -19,6 +19,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 회원가입
     @PostMapping("/signup")
     public Map<String, Object> signup(@RequestBody User user) {
         Map<String, Object> map = new HashMap<>();
@@ -31,15 +32,18 @@ public class UserController {
         return map;
     }
 
-    @GetMapping("/")
-    public Model userProfile(HttpServletRequest request, Model model) {
+    // 로그인한 유저 정보 조회
+    @GetMapping("/user")
+    public Map<String, Object> userProfile(HttpServletRequest request, Model model) {
+        Map<String, Object> map = new HashMap<>();
+
         HttpSession session = request.getSession();
-        int userId = (Integer) session.getAttribute("userId");
+        int userId = (Integer) session.getAttribute("id");
 
         Optional<User> user = userService.findById(userId);
-
         model.addAttribute("user", user);
+        map.put("user", user);
 
-        return model;
+        return map;
     }
 }

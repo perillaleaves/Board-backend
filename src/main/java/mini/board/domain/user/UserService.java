@@ -36,6 +36,14 @@ public class UserService {
                 .findFirst();
     }
 
+    @Transactional
+    public Optional<User> findById(int userId) {
+
+        return userRepository.findAll().stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst();
+    }
+
     private void validate(User user) {
         boolean phone_validate = Pattern.matches("^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", user.getPhoneNum());
         boolean email_validate = Pattern.matches("\\w+@\\w+\\.\\w+(\\.\\w+)?", user.getEmail());
