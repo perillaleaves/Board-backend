@@ -1,12 +1,15 @@
 package mini.board.domain.user;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:3001")
 @RestController
 public class UserController {
 
@@ -17,7 +20,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public Map<String, Object> signup(@ModelAttribute User user) {
+    public Map<String, Object> signup(@RequestBody User user) {
         Map<String, Object> map = new HashMap<>();
 
         User saveUser = userService.save(user);
@@ -28,4 +31,15 @@ public class UserController {
         return map;
     }
 
+    @GetMapping("/")
+    public Model userProfile(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession();
+        int userId = (Integer) session.getAttribute("userId");
+
+        Optional<User> user = userService.findById(userId);
+
+        model.addAttribute("user", user);
+
+        return model;
+    }
 }
