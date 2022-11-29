@@ -22,3 +22,5 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+server:
+  address: 0.0.0.0
