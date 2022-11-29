@@ -13,6 +13,10 @@ public class UserDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public String getPassword() {
+        return password;
+    }
+
     public String getLoginId() {
         return loginId;
     }
