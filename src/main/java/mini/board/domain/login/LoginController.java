@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:3001")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class LoginController {
 
@@ -27,7 +27,6 @@ public class LoginController {
         if (loginUser != null) {
             HttpSession session = request.getSession();
             session.setAttribute("loginUser", loginUser);
-
             map.put("result", "login");
         } else {
             map.put("result", "fail");
