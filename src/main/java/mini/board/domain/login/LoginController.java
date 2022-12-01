@@ -1,6 +1,7 @@
 package mini.board.domain.login;
 
 import mini.board.domain.user.User;
+import mini.board.exception.APIError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,17 +23,24 @@ public class LoginController {
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody User user, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        User loginUser = loginService.signIn(user);
 
-        if (loginUser != null) {
+        try {
+            Map<String, Object> success = new HashMap<>();
+            User loginUser = loginService.signIn(user);
             HttpSession session = request.getSession();
             session.setAttribute("loginUser", loginUser);
-            map.put("result", "login");
-        } else {
-            map.put("result", "fail");
+            map.put("success", success);
+            success.put("code", "login");
+            success.put("message", "로그인");
+            return map;
+        } catch (APIError e){
+            Map<String, Object> fail = new HashMap<>();
+            map.put("fail", fail);
+            fail.put("code", e.getCode());
+            fail.put("message", e.getMessage());
+            return map;
         }
 
-        return map;
     }
 
     // 로그아웃
@@ -42,8 +50,10 @@ public class LoginController {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
-            map.put("result", "logout");
-            System.out.println("logout");
+            Map<String, Object> success = new HashMap<>();
+            map.put("success", success);
+            success.put("code", "logout");
+            success.put("message", "로그아웃");
         }
 
         return map;

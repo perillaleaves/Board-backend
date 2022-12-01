@@ -13,31 +13,40 @@ public class UserDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public String getPassword() {
-        return password;
+    public Long getId() {
+        return id;
     }
 
     public String getLoginId() {
         return loginId;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     public UserDTO() {
     }
-
-    public UserDTO(String loginId, String name) {
-        this.loginId = loginId;
-        this.name = name;
-    }
-
 
     public UserDTO(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt) {
         this.id = id;
