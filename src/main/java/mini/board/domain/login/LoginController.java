@@ -23,19 +23,26 @@ public class LoginController {
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody User user, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
+        Map<String, Object> success = new HashMap<>();
+        Map<String, Object> fail = new HashMap<>();
 
         try {
-            Map<String, Object> success = new HashMap<>();
             User loginUser = loginService.signIn(user);
             HttpSession session = request.getSession();
             session.setAttribute("loginUser", loginUser);
-            map.put("success", success);
+
+            map.put("data", success);
             success.put("code", "login");
             success.put("message", "로그인");
+            map.put("error", fail);
+            fail.put("code", "");
+            fail.put("message", "");
             return map;
         } catch (APIError e){
-            Map<String, Object> fail = new HashMap<>();
-            map.put("fail", fail);
+            map.put("data", success);
+            success.put("code", "");
+            success.put("message", "");
+            map.put("error", fail);
             fail.put("code", e.getCode());
             fail.put("message", e.getMessage());
             return map;

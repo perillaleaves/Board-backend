@@ -4,17 +4,12 @@ import mini.board.exception.APIError;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
 public class UserService {
-
-    @PersistenceContext
-    private EntityManager em;
 
     private final UserRepository userRepository;
 
@@ -23,7 +18,7 @@ public class UserService {
     }
 
     @Transactional
-    public User save(User user) {
+    public User create(User user) {
         validate(user);
 
         LocalDateTime date = LocalDateTime.now();
@@ -39,14 +34,28 @@ public class UserService {
         return userRepository.findByLoginId(user.getLoginId());
     }
 
+    @Transactional
+    public Optional<User> findByPhoneNum(User user) {
+
+        return userRepository.findByPhoneNum(user.getPhoneNum());
+    }
+
+    @Transactional
+    public Optional<User> findByEmail(User user) {
+
+        return userRepository.findByEmail(user.getEmail());
+    }
 
     @Transactional
     public void update(User user) {
         User findUser = userRepository.findById(user.getId()).get();
 
+        updateValidate(user);
+
         findUser.setPassword(user.getPassword());
         findUser.setPhoneNum(user.getPhoneNum());
         findUser.setEmail(user.getEmail());
+
         userRepository.save(findUser);
     }
 
@@ -98,5 +107,31 @@ public class UserService {
         }
     }
 
+    private void updateValidate(User user) {
+        boolean email_validate = Pattern.matches("\\w+@\\w+\\.\\w+(\\.\\w+)?", user.getEmail());
+        boolean password_validate = Pattern.matches("^(?=.*?[A-Z]+).{8,}", user.getPassword());
+
+        if (user.getPassword().isBlank()) {
+            throw new APIError("InvalidPassword", "비밀번호를 입력해주세요.");
+        }
+        if (user.getPassword().length() < 8) {
+            throw new APIError("InvalidPassword", "비밀번호를 8글자 이상 입력해주세요.");
+        }
+        if (!password_validate) {
+            throw new APIError("InvalidPassword", "비밀번호를 양식에 맞게 입력해주세요.");
+        }
+        if (user.getPhoneNum().isBlank()) {
+            throw new APIError("InvalidPhoneNumber", "연락처를 입력해주세요.");
+        }
+        if (user.getEmail().isBlank()) {
+            throw new APIError("InvalidEmail", "이메일을 입력해주세요.");
+        }
+        if (!email_validate) {
+            throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
+        }
+
+
+
+    }
 
 }
