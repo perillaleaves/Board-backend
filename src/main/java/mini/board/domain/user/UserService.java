@@ -1,5 +1,6 @@
 package mini.board.domain.user;
 
+import mini.board.exception.APIError;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,57 +18,127 @@ public class UserService {
     }
 
     @Transactional
-    public User save(User user) {
+    public User create(User user) {
         validate(user);
 
         LocalDateTime date = LocalDateTime.now();
         user.setCreatedAt(date);
+        user.setUpdatedAt(date);
 
-        User saveUser = userRepository.save(user);
-
-        return saveUser;
+        return userRepository.save(user);
     }
 
     @Transactional
     public Optional<User> findByLoginId(User user) {
 
-        return userRepository.findAll().stream()
-                .filter(u -> u.getLoginId().equals(user.getLoginId()))
-                .findFirst();
+        return userRepository.findByLoginId(user.getLoginId());
+    }
+
+    @Transactional
+    public Optional<User> findByPhoneNum(User user) {
+
+        return userRepository.findByPhoneNum(user.getPhoneNum());
+    }
+
+    @Transactional
+    public Optional<User> findByEmail(User user) {
+
+        return userRepository.findByEmail(user.getEmail());
+    }
+
+    @Transactional
+    public User update(User user, Long id) {
+
+        updateValidate(user);
+        User findUser = userRepository.findById(id).orElse(null);
+
+        findUser.setPassword(user.getPassword());
+        findUser.setPhoneNum(user.getPhoneNum());
+        findUser.setEmail(user.getEmail());
+
+        return userRepository.save(findUser);
     }
 
     private void validate(User user) {
-        boolean phone_validate = Pattern.matches("^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", user.getPhoneNum());
         boolean email_validate = Pattern.matches("\\w+@\\w+\\.\\w+(\\.\\w+)?", user.getEmail());
-        boolean password_validate = Pattern.matches("^(?=.*?[A-Z])(?=.*?[0-9]).{8,}", user.getPassword());
+        boolean password_validate = Pattern.matches("^(?=.*?[A-Z]+).{8,}", user.getPassword());
 
+        if (user.getName().isBlank()) {
+            throw new APIError("InvalidName", "이름을 입력해주세요.");
+        }
+        if (user.getLoginId().isBlank()) {
+            throw new APIError("InvalidId", "아이디를 입력해주세요.");
+        }
         if (user.getLoginId().length() < 8) {
-            throw new Error("아이디를 8글자 이상 입력해주세요.");
+            throw new APIError("InvalidId", "아이디를 8글자 이상 입력해주세요.");
+        }
+        if (user.getPassword().isBlank()) {
+            throw new APIError("InvalidPassword", "비밀번호를 입력해주세요.");
+        }
+        if (user.getPassword().length() < 8) {
+            throw new APIError("InvalidPassword", "비밀번호를 8글자 이상 입력해주세요.");
         }
         if (!password_validate) {
-            throw new Error("비밀번호를 양식에 맞게 입력해주세요.");
+            throw new APIError("InvalidPassword", "비밀번호를 양식에 맞게 입력해주세요.");
         }
-        if (user.getName().length() < 0) {
-            throw new Error("이름을 입력해주세요.");
+        if (user.getPhoneNum().isBlank()) {
+            throw new APIError("InvalidPhoneNumber", "연락처를 입력해주세요.");
         }
-        if (user.getPhoneNum().length() < 0) {
-            throw new Error("연락처를 입력해주세요.");
-        }
-        if (!phone_validate) {
-            throw new Error("연락처를 양식에 맞게 입력해주세요.");
-        }
-        if (user.getEmail().length() < 0 && email_validate) {
-            throw new Error("이메일을 입력해주세요.");
+        if (user.getEmail().isBlank()) {
+            throw new APIError("InvalidEmail", "이메일을 입력해주세요.");
         }
         if (!email_validate) {
-            throw new Error("이메일을 양식에 맞게 입력해주세요.");
+            throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
         }
 
         Optional<User> userByLoginId = userRepository.findByLoginId(user.getLoginId());
         if (userByLoginId.isPresent()) {
-            throw new Error("이미 존재하는 아이디입니다.");
+            throw new APIError("ExistsId", "이미 존재하는 아이디 입니다.");
+        }
+
+        Optional<User> userByPhoneNum = userRepository.findByPhoneNum(user.getPhoneNum());
+        if (userByPhoneNum.isPresent()) {
+            throw new APIError("ExistsPhoneNumber", "이미 존재하는 연락처 입니다.");
+        }
+
+        Optional<User> userByEmail = userRepository.findByEmail(user.getEmail());
+        if (userByEmail.isPresent()) {
+            throw new APIError("ExistsEmail", "이미 존재하는 이메일 입니다.");
         }
     }
 
+    private void updateValidate(User user) {
+
+        boolean email_validate = Pattern.matches("\\w+@\\w+\\.\\w+(\\.\\w+)?", user.getEmail());
+        boolean password_validate = Pattern.matches("^(?=.*?[A-Z]+).{8,}", user.getPassword());
+
+        if (user.getPassword().isBlank()) {
+            throw new APIError("InvalidPassword", "비밀번호를 입력해주세요.");
+        }
+        if (user.getPassword().length() < 8) {
+            throw new APIError("InvalidPassword", "비밀번호를 8글자 이상 입력해주세요.");
+        }
+        if (!password_validate) {
+            throw new APIError("InvalidPassword", "비밀번호를 양식에 맞게 입력해주세요.");
+        }
+        if (user.getPhoneNum().isBlank()) {
+            throw new APIError("InvalidPhoneNumber", "연락처를 입력해주세요.");
+        }
+        if (user.getEmail().isBlank()) {
+            throw new APIError("InvalidEmail", "이메일을 입력해주세요.");
+        }
+        if (!email_validate) {
+            throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
+        }
+
+        if (userRepository.findByPhoneNum(user.getPhoneNum()).isPresent()) {
+            throw new APIError("ExistsPhoneNumber", "이미 존재하는 연락처 입니다.");
+        }
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new APIError("ExistsEmail", "이미 존재하는 이메일 입니다.");
+        }
+
+    }
 
 }

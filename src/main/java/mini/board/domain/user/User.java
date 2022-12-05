@@ -1,12 +1,6 @@
 package mini.board.domain.user;
 
-import com.sun.istack.NotNull;
-import org.springframework.lang.Nullable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
