@@ -30,6 +30,7 @@ public class LoginController {
             User loginUser = loginService.signIn(user);
             HttpSession session = request.getSession();
             session.setAttribute("loginUser", loginUser);
+            session.setAttribute("userId", loginUser.getId());
 
             map.put("data", success);
             success.put("code", "login");

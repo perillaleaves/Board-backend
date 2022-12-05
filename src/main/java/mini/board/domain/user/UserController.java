@@ -117,14 +117,14 @@ public class UserController {
     }
 
     // 로그인한 유저 정보 수정
-//    @PutMapping("/update")
-//    public Map<String, Object> userProfileUpdate(@RequestBody User user) {
-//        Map<String, Object> map = new HashMap<>();
-//
-//        userService.update(user);
-//        map.put("user", user.getPassword());
-//
-//        return map;
-//    }
+    @PutMapping("/update")
+    public Map<String, Object> userProfileUpdate(HttpServletRequest request, @RequestBody User user) {
+        Map<String, Object> map = new HashMap<>();
+        HttpSession session = request.getSession();
+        Long userId = (Long) session.getAttribute("userId");
+        userService.update(user, userId);
+
+        return map;
+    }
 
 }
