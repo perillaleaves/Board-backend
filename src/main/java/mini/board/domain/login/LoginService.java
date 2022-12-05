@@ -19,16 +19,16 @@ public class LoginService {
 
     public User signIn(User user) {
 
-        Optional<User> getUser = userService.findByLoginId(user);
+        User getUser = userService.findByLoginId(user).orElse(null);
 
-        if (getUser.isEmpty()) {
+        if (getUser == null) {
             throw new APIError("EmptyLoginId", "아이디가 존재하지 않습니다.");
         }
-        if (!getUser.get().getPassword().equals(user.getPassword())) {
+        if (!getUser.getPassword().equals(user.getPassword())) {
             throw new APIError("InconsistencyPassword", "비밀번호가 일치하지 않습니다.");
         }
 
-        return getUser.get();
+        return getUser;
     }
 
 

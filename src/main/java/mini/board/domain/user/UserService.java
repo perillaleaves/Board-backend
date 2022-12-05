@@ -47,16 +47,16 @@ public class UserService {
     }
 
     @Transactional
-    public void update(User user) {
-        User findUser = userRepository.findById(user.getId()).get();
+    public User update(User user, Long id) {
 
         updateValidate(user);
+        User findUser = userRepository.findById(id).orElse(null);
 
         findUser.setPassword(user.getPassword());
         findUser.setPhoneNum(user.getPhoneNum());
         findUser.setEmail(user.getEmail());
 
-        userRepository.save(findUser);
+        return userRepository.save(findUser);
     }
 
     private void validate(User user) {
@@ -108,6 +108,7 @@ public class UserService {
     }
 
     private void updateValidate(User user) {
+
         boolean email_validate = Pattern.matches("\\w+@\\w+\\.\\w+(\\.\\w+)?", user.getEmail());
         boolean password_validate = Pattern.matches("^(?=.*?[A-Z]+).{8,}", user.getPassword());
 
@@ -130,7 +131,13 @@ public class UserService {
             throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
         }
 
+        if (userRepository.findByPhoneNum(user.getPhoneNum()).isPresent()) {
+            throw new APIError("ExistsPhoneNumber", "이미 존재하는 연락처 입니다.");
+        }
 
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new APIError("ExistsEmail", "이미 존재하는 이메일 입니다.");
+        }
 
     }
 
