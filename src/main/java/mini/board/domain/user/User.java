@@ -1,12 +1,16 @@
 package mini.board.domain.user;
 
+import mini.board.domain.post.Post;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -23,6 +27,9 @@ public class User {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -88,12 +95,15 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public User() {
-    }
+//    public List<Post> getPosts() {
+//        return posts;
+//    }
+//
+//    public void setPosts(List<Post> posts) {
+//        this.posts = posts;
+//    }
 
-    public User(String loginId, String password) {
-        this.loginId = loginId;
-        this.password = password;
+    public User() {
     }
 
     public User(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -105,5 +115,6 @@ public class User {
         this.email = email;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+
     }
 }

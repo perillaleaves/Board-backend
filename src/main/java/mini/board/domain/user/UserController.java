@@ -109,8 +109,9 @@ public class UserController {
         HttpSession session = request.getSession();
         User loginUser = (User) session.getAttribute("loginUser");
 
-        Optional<User> user = userService.findByLoginId(loginUser);
-        model.addAttribute("user", user);
+        User user = userService.findByLoginId(loginUser).get();
+        UserDTO userDTO = new UserDTO(user.getId(), user.getLoginId(), user.getPassword(), user.getName(), user.getPhoneNum(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
+        model.addAttribute("user", userDTO);
         map.put("user", user);
 
         return map;

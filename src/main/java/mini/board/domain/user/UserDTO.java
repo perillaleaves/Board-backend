@@ -48,7 +48,8 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt) {
+
+    public UserDTO(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.loginId = loginId;
         this.password = password;
@@ -56,5 +57,6 @@ public class UserDTO {
         this.phoneNum = phoneNum;
         this.email = email;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
