@@ -29,7 +29,7 @@ public class PostController {
         User loginUser = (User) session.getAttribute("loginUser");
 
         try {
-            postService.create(post, loginUser);
+            postService.create(post, loginUser, request);
             map.put("data", data);
             data.put("code", "create");
             data.put("message", "게시글 작성");
@@ -71,12 +71,39 @@ public class PostController {
     public Map<String, Object> post(@PathVariable("postId") Post post) {
         Map<String, Object> map = new HashMap<>();
 
-        Post getPost = postService.getPost(post).get();
+        Post getPost = postService.getPost(post).orElse(null);
         PostDTO postDTO = new PostDTO(getPost.getId(), getPost.getTitle(), getPost.getContent(), getPost.getCreatedAt(), getPost.getUpdatedAt(),
                 new UserDTO(getPost.getUser().getId(), getPost.getUser().getLoginId(), getPost.getUser().getPassword(), getPost.getUser().getName(), getPost.getUser().getPhoneNum(), getPost.getUser().getEmail(), getPost.getUser().getCreatedAt(), getPost.getUser().getUpdatedAt()));
 
         map.put("post", postDTO);
         return map;
+    }
+
+    // 게시글 수정
+    @PutMapping("/post/update/{post_id}")
+    public Map<String, Object> update(@PathVariable("post_id") Long postId, @RequestBody Post post, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Object> error = new HashMap<>();
+        map.put("data", data);
+        map.put("error", error);
+
+        try {
+            postService.updatePost(postId, post, request);
+            data.put("code", "update");
+            data.put("message", "게시글 수정");
+            error.put("code", "");
+            error.put("message", "");
+            return map;
+        } catch (APIError e) {
+            data.put("code", "");
+            data.put("message", "");
+            error.put("code", e.getCode());
+            error.put("message", e.getMessage());
+            return map;
+        }
+
+
     }
 
 }

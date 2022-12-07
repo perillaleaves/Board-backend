@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +30,8 @@ public class PostService {
     private EntityManager em;
 
     @Transactional
-    public Post create(Post post, User user) {
+    public Post create(Post post, User user, HttpServletRequest request) {
+        loginValidate(request);
         validate(post);
 
         LocalDateTime date = LocalDateTime.now();
@@ -58,6 +61,21 @@ public class PostService {
         return Optional.ofNullable(getPost);
     }
 
+    @Transactional
+    public Post updatePost(Long postId, Post post, HttpServletRequest request) {
+
+        loginValidate(request);
+        validate(post);
+        LocalDateTime date = LocalDateTime.now();
+
+        Post findPost = postRepository.findById(postId).get();
+        findPost.setTitle(post.getTitle());
+        findPost.setContent(post.getContent());
+        findPost.setUpdatedAt(date);
+        return postRepository.save(findPost);
+
+    }
+
     private void validate(Post post) {
 
         if (post.getTitle().isBlank()) {
@@ -78,6 +96,14 @@ public class PostService {
 
     }
 
+    private void loginValidate(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+        }
+    }
 
 
 }
