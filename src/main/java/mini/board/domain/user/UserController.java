@@ -118,12 +118,27 @@ public class UserController {
     }
 
     // 로그인한 유저 정보 수정
-    @PutMapping("/update")
-    public Map<String, Object> userProfileUpdate(HttpServletRequest request, @RequestBody User user) {
+    @PutMapping("/user/update")
+    public Map<String, Object> userProfileUpdate(@RequestBody User user, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
+        Map<String, Object> success = new HashMap<>();
+        Map<String, String> error = new HashMap<>();
         HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
-        userService.update(user, userId);
+        map.put("success", success);
+        map.put("error", error);
+
+        try {
+            userService.update(user, request);
+            success.put("code", "update");
+            success.put("message", "유저 정보 수정");
+            error.put("code", "");
+            error.put("message", "");
+        } catch (APIError e) {
+            success.put("code", "");
+            success.put("message", "");
+            error.put("code", e.getCode());
+            error.put("message", e.getMessage());
+        }
 
         return map;
     }

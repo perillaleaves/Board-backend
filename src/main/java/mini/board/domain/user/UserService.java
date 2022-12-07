@@ -4,6 +4,8 @@ import mini.board.exception.APIError;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -47,14 +49,17 @@ public class UserService {
     }
 
     @Transactional
-    public User update(User user, Long id) {
+    public User update(User user, HttpServletRequest request) {
 
+        loginValidate(request);
         updateValidate(user);
-        User findUser = userRepository.findById(id).orElse(null);
+        LocalDateTime date = LocalDateTime.now();
+        User findUser = userRepository.findById(user.getId()).get();
 
         findUser.setPassword(user.getPassword());
         findUser.setPhoneNum(user.getPhoneNum());
         findUser.setEmail(user.getEmail());
+        findUser.setUpdatedAt(date);
 
         return userRepository.save(findUser);
     }
@@ -131,14 +136,15 @@ public class UserService {
             throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
         }
 
-        if (userRepository.findByPhoneNum(user.getPhoneNum()).isPresent()) {
-            throw new APIError("ExistsPhoneNumber", "이미 존재하는 연락처 입니다.");
-        }
+    }
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new APIError("ExistsEmail", "이미 존재하는 이메일 입니다.");
-        }
+    private void loginValidate(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
 
+        if (loginUser == null) {
+            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+        }
     }
 
 }
