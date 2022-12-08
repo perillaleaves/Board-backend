@@ -20,16 +20,14 @@ public class PostController {
     }
 
     // 게시글 작성
-    @PostMapping("/create")
+    @PostMapping("/post/create")
     public Map<String, Object> create(@RequestBody Post post, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> error = new HashMap<>();
-        HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
 
         try {
-            postService.create(post, loginUser, request);
+            postService.create(post, request);
             map.put("data", data);
             data.put("code", "create");
             data.put("message", "게시글 작성");
