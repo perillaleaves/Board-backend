@@ -1,12 +1,10 @@
 package mini.board.domain.post;
 
-import mini.board.domain.user.User;
 import mini.board.domain.user.UserDTO;
 import mini.board.exception.APIError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -78,7 +76,7 @@ public class PostController {
     }
 
     // 게시글 수정
-    @PutMapping("/post/update/{post_id}")
+    @PutMapping("/post/{post_id}/update")
     public Map<String, Object> update(@PathVariable("post_id") Long postId, @RequestBody Post post, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
@@ -92,16 +90,37 @@ public class PostController {
             data.put("message", "게시글 수정");
             error.put("code", "");
             error.put("message", "");
-            return map;
         } catch (APIError e) {
             data.put("code", "");
             data.put("message", "");
             error.put("code", e.getCode());
             error.put("message", e.getMessage());
-            return map;
+        }
+        return map;
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/post/{post_id}/delete")
+    public Map<String, Object> delete(@PathVariable("post_id") Long postId, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Object> error = new HashMap<>();
+        map.put("data", data);
+        map.put("error", error);
+        try {
+            postService.delete(postId, request);
+            data.put("code", "delete");
+            data.put("message", "게시글 삭제");
+            error.put("code", "");
+            error.put("message", "");
+        } catch (APIError e) {
+            data.put("code", "");
+            data.put("message", "");
+            error.put("code", e.getCode());
+            error.put("message", e.getMessage());
         }
 
-
+        return map;
     }
 
 }
