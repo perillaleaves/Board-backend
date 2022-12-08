@@ -3,7 +3,6 @@ package mini.board.domain.post;
 import mini.board.domain.login.LoginService;
 import mini.board.domain.user.User;
 import mini.board.exception.APIError;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +29,17 @@ public class PostService {
     private EntityManager em;
 
     @Transactional
-    public Post create(Post post, User user, HttpServletRequest request) {
+    public Post create(Post post, HttpServletRequest request) {
         loginValidate(request);
         validate(post);
+
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
 
         LocalDateTime date = LocalDateTime.now();
         post.setCreatedAt(date);
         post.setUpdatedAt(date);
-        post.setUser(user);
+        post.setUser(loginUser);
 
         Post addPost = postRepository.save(post);
 
@@ -72,8 +74,8 @@ public class PostService {
         findPost.setTitle(post.getTitle());
         findPost.setContent(post.getContent());
         findPost.setUpdatedAt(date);
-        return postRepository.save(findPost);
 
+        return postRepository.save(findPost);
     }
 
     private void validate(Post post) {

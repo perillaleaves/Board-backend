@@ -5,8 +5,6 @@ import mini.board.domain.user.UserService;
 import mini.board.exception.APIError;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 
 @Service
 public class LoginService {
