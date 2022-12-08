@@ -1,6 +1,5 @@
 package mini.board.domain.post;
 
-import mini.board.domain.user.User;
 import mini.board.domain.user.UserDTO;
 
 import java.time.LocalDateTime;
