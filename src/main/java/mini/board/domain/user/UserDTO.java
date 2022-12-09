@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class UserDTO {
 
-    private Long id;
+    private Long userId;
     private String loginId;
     private String password;
     private String name;
@@ -13,9 +13,7 @@ public class UserDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Long getId() {
-        return id;
-    }
+    public Long getUserId() { return userId; }
 
     public String getLoginId() {
         return loginId;
@@ -48,9 +46,20 @@ public class UserDTO {
     public UserDTO() {
     }
 
+    public UserDTO(String name) {
+        this.name = name;
+    }
 
-    public UserDTO(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+    public UserDTO(Long userId, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.userId = userId;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+
+    public UserDTO(Long userId, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.userId = userId;
         this.loginId = loginId;
         this.password = password;
         this.name = name;

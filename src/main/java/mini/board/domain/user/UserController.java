@@ -19,32 +19,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    // 1. 회원가입
-    @PostMapping("/signup")
-    public Map<String, Object> signup(@RequestBody User user) {
-        Map<String, Object> map = new HashMap<>();
-        Map<String, Object> success = new HashMap<>();
-        Map<String, String> error = new HashMap<>();
-        map.put("success", success);
-        map.put("error", error);
-
-        try {
-            userService.create(user);
-            success.put("code", "signup");
-            success.put("message", "회원가입");
-            error.put("code", "");
-            error.put("message", "");
-            return map;
-        } catch (APIError e) {
-            success.put("code", "");
-            success.put("message", "");
-            error.put("code", e.getCode());
-            error.put("message", e.getMessage());
-        }
-
-        return map;
-    }
-
     // 4. 유저 아이디 중복 확인
     @GetMapping("/overlap/loginId")
     public Map<String, Object> overlapLoginId(@ModelAttribute User user) {
@@ -52,7 +26,7 @@ public class UserController {
         Map<String, Object> validate = new HashMap<>();
         map.put("validate", validate);
 
-        if (userService.findByLoginId(user).isPresent()) {
+        if (userService.findByLoginId(user.getLoginId()).isPresent()) {
             validate.put("code", "overlap");
             validate.put("message", "이미 사용중인 아이디 입니다.");
         } else {
@@ -70,7 +44,7 @@ public class UserController {
         Map<String, Object> validate = new HashMap<>();
         map.put("validate", validate);
 
-        if (userService.findByPhoneNum(user).isPresent()) {
+        if (userService.findByPhoneNum(user.getPhoneNum()).isPresent()) {
             validate.put("code", "overlap");
             validate.put("message", "이미 사용중인 연락처 입니다.");
         } else {
@@ -88,7 +62,7 @@ public class UserController {
         Map<String, Object> validate = new HashMap<>();
         map.put("validate", validate);
 
-        if (userService.findByEmail(user).isPresent()) {
+        if (userService.findByEmail(user.getEmail()).isPresent()) {
             validate.put("code", "overlap");
             validate.put("message", "이미 사용중인 이메일 입니다.");
         } else {
@@ -101,16 +75,15 @@ public class UserController {
 
     // 7. 로그인한 유저 정보 조회
     @GetMapping("/user")
-    public Map<String, Object> userProfile(HttpServletRequest request, Model model) {
+    public Map<String, Object> userProfile(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
 
         HttpSession session = request.getSession();
         User loginUser = (User) session.getAttribute("loginUser");
 
-        User user = userService.findByLoginId(loginUser).get();
+        User user = userService.findByLoginId(loginUser.getLoginId()).get();
         UserDTO userDTO = new UserDTO(user.getId(), user.getLoginId(), user.getPassword(), user.getName(), user.getPhoneNum(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
-        model.addAttribute("user", userDTO);
-        map.put("user", user);
+        map.put("user", userDTO);
 
         return map;
     }
@@ -121,7 +94,6 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> success = new HashMap<>();
         Map<String, String> error = new HashMap<>();
-        HttpSession session = request.getSession();
         map.put("success", success);
         map.put("error", error);
 
