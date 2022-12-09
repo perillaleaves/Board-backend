@@ -51,8 +51,7 @@ public class UserService {
     @Transactional
     public User update(User user, HttpServletRequest request) {
 
-        loginValidate(request);
-        updateValidate(user);
+        updateValidate(user, request);
         LocalDateTime date = LocalDateTime.now();
         User findUser = userRepository.findById(user.getId()).get();
 
@@ -75,16 +74,16 @@ public class UserService {
             throw new APIError("InvalidId", "아이디를 입력해주세요.");
         }
         if (user.getLoginId().length() < 8) {
-            throw new APIError("InvalidId", "아이디를 8글자 이상 입력해주세요.");
+            throw new APIError("LengthId", "아이디를 8글자 이상 입력해주세요.");
         }
         if (user.getPassword().isBlank()) {
             throw new APIError("InvalidPassword", "비밀번호를 입력해주세요.");
         }
         if (user.getPassword().length() < 8) {
-            throw new APIError("InvalidPassword", "비밀번호를 8글자 이상 입력해주세요.");
+            throw new APIError("LengthPassword", "비밀번호를 8글자 이상 입력해주세요.");
         }
         if (!password_validate) {
-            throw new APIError("InvalidPassword", "비밀번호를 양식에 맞게 입력해주세요.");
+            throw new APIError("FormPassword", "비밀번호를 양식에 맞게 입력해주세요.");
         }
         if (user.getPhoneNum().isBlank()) {
             throw new APIError("InvalidPhoneNumber", "연락처를 입력해주세요.");
@@ -93,7 +92,7 @@ public class UserService {
             throw new APIError("InvalidEmail", "이메일을 입력해주세요.");
         }
         if (!email_validate) {
-            throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
+            throw new APIError("FormEmail", "이메일을 양식에 맞게 입력해주세요.");
         }
 
         Optional<User> userByLoginId = userRepository.findByLoginId(user.getLoginId());
@@ -112,7 +111,14 @@ public class UserService {
         }
     }
 
-    private void updateValidate(User user) {
+    private void updateValidate(User user, HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+        }
 
         boolean email_validate = Pattern.matches("\\w+@\\w+\\.\\w+(\\.\\w+)?", user.getEmail());
         boolean password_validate = Pattern.matches("^(?=.*?[A-Z]+).{8,}", user.getPassword());
@@ -121,10 +127,10 @@ public class UserService {
             throw new APIError("InvalidPassword", "비밀번호를 입력해주세요.");
         }
         if (user.getPassword().length() < 8) {
-            throw new APIError("InvalidPassword", "비밀번호를 8글자 이상 입력해주세요.");
+            throw new APIError("LengthPassword", "비밀번호를 8글자 이상 입력해주세요.");
         }
         if (!password_validate) {
-            throw new APIError("InvalidPassword", "비밀번호를 양식에 맞게 입력해주세요.");
+            throw new APIError("FormPassword", "비밀번호를 양식에 맞게 입력해주세요.");
         }
         if (user.getPhoneNum().isBlank()) {
             throw new APIError("InvalidPhoneNumber", "연락처를 입력해주세요.");
@@ -133,17 +139,7 @@ public class UserService {
             throw new APIError("InvalidEmail", "이메일을 입력해주세요.");
         }
         if (!email_validate) {
-            throw new APIError("InvalidEmail", "이메일을 양식에 맞게 입력해주세요.");
-        }
-
-    }
-
-    private void loginValidate(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
-
-        if (loginUser == null) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+            throw new APIError("FormEmail", "이메일을 양식에 맞게 입력해주세요.");
         }
     }
 

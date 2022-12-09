@@ -19,44 +19,43 @@ public class UserController {
         this.userService = userService;
     }
 
-    // 회원가입
+    // 1. 회원가입
     @PostMapping("/signup")
     public Map<String, Object> signup(@RequestBody User user) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> success = new HashMap<>();
         Map<String, String> error = new HashMap<>();
+        map.put("success", success);
+        map.put("error", error);
 
         try {
             userService.create(user);
-            map.put("success", success);
             success.put("code", "signup");
             success.put("message", "회원가입");
-            map.put("error", error);
             error.put("code", "");
             error.put("message", "");
             return map;
         } catch (APIError e) {
-            map.put("success", success);
             success.put("code", "");
             success.put("message", "");
-            map.put("error", error);
             error.put("code", e.getCode());
             error.put("message", e.getMessage());
-            return map;
         }
+
+        return map;
     }
 
-    // 유저 아이디 중복 확인
+    // 4. 유저 아이디 중복 확인
     @GetMapping("/overlap/loginId")
     public Map<String, Object> overlapLoginId(@ModelAttribute User user) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> validate = new HashMap<>();
+        map.put("validate", validate);
+
         if (userService.findByLoginId(user).isPresent()) {
-            map.put("validate", validate);
             validate.put("code", "overlap");
             validate.put("message", "이미 사용중인 아이디 입니다.");
         } else {
-            map.put("validate", validate);
             validate.put("code", "available");
             validate.put("message", "사용 가능한 아이디 입니다.");
         }
@@ -64,17 +63,17 @@ public class UserController {
         return map;
     }
 
-    // 유저 연락처 중복 확인
-    @GetMapping("/overlap/phoneNum")
+    // 5. 유저 연락처 중복 확인
+    @GetMapping("/overlap/phonenumber")
     public Map<String, Object> overlapPhoneNum(@ModelAttribute User user) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> validate = new HashMap<>();
+        map.put("validate", validate);
+
         if (userService.findByPhoneNum(user).isPresent()) {
-            map.put("validate", validate);
             validate.put("code", "overlap");
             validate.put("message", "이미 사용중인 연락처 입니다.");
         } else {
-            map.put("validate", validate);
             validate.put("code", "available");
             validate.put("message", "사용 가능한 연락처 입니다.");
         }
@@ -82,17 +81,17 @@ public class UserController {
         return map;
     }
 
-    // 유저 이메일 중복 확인
+    // 6. 유저 이메일 중복 확인
     @GetMapping("/overlap/email")
     public Map<String, Object> overlapEmail(@ModelAttribute User user) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> validate = new HashMap<>();
+        map.put("validate", validate);
+
         if (userService.findByEmail(user).isPresent()) {
-            map.put("validate", validate);
             validate.put("code", "overlap");
             validate.put("message", "이미 사용중인 이메일 입니다.");
         } else {
-            map.put("validate", validate);
             validate.put("code", "available");
             validate.put("message", "사용 가능한 이메일 입니다.");
         }
@@ -100,7 +99,7 @@ public class UserController {
         return map;
     }
 
-    // 로그인한 유저 정보 조회
+    // 7. 로그인한 유저 정보 조회
     @GetMapping("/user")
     public Map<String, Object> userProfile(HttpServletRequest request, Model model) {
         Map<String, Object> map = new HashMap<>();
@@ -116,7 +115,7 @@ public class UserController {
         return map;
     }
 
-    // 로그인한 유저 정보 수정
+    // 8. 로그인한 유저 정보 수정
     @PutMapping("/user/update")
     public Map<String, Object> userProfileUpdate(@RequestBody User user, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
