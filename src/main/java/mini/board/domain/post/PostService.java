@@ -5,6 +5,7 @@ import mini.board.domain.comment.CommentRepository;
 import mini.board.domain.login.LoginService;
 import mini.board.domain.user.User;
 import mini.board.exception.APIError;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,6 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,21 +52,20 @@ public class PostService {
     }
 
     @Transactional
-    public List<Post> getPosts() {
+    public List<Post> getPosts(Pageable pageable) {
 
         return em.createQuery("select p from Post p join fetch p.user", Post.class)
                 .getResultList();
-
     }
 
     @Transactional
-    public Optional<Post> getPost(Post post) {
+    public Optional<Post> getPost(Long postId) {
 
-        Post getPost = em.createQuery("select p from Post p join fetch p.user join fetch p.comments where p.id = : id", Post.class)
-                .setParameter("id", post.getId())
+        Post post = em.createQuery("select p from Post p join fetch p.user join fetch p.comments where p.id = : id", Post.class)
+                .setParameter("id", postId)
                 .getSingleResult();
 
-        return Optional.ofNullable(getPost);
+        return Optional.ofNullable(post);
     }
 
     @Transactional
@@ -95,13 +94,10 @@ public class PostService {
         Post findPost = postRepository.findById(postId).get();
         List<Comment> comments = findPost.getComments();
 
-        if (comments.size() == 0) {
-            postRepository.delete(findPost);
-        } else {
+        if (comments.size() > 0) {
             commentRepository.deleteAll(comments);
-            postRepository.delete(findPost);
         }
-
+        postRepository.delete(findPost);
     }
 
     private void validate(Post post, HttpServletRequest request) {

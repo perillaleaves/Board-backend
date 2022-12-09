@@ -78,6 +78,13 @@ public class Comment {
     public Comment() {
     }
 
+    public Comment(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Comment(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, User user, Post post) {
         this.id = id;
         this.content = content;
@@ -86,4 +93,5 @@ public class Comment {
         this.user = user;
         this.post = post;
     }
+
 }

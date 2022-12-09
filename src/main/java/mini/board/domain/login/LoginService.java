@@ -15,14 +15,15 @@ public class LoginService {
         this.userService = userService;
     }
 
-    public User signIn(User user) {
+    public User signIn(String loginId, String password) {
 
-        User getUser = userService.findByLoginId(user).orElse(null);
+        User getUser = userService.findByLoginId(loginId).orElse(null);
+
 
         if (getUser == null) {
             throw new APIError("EmptyLoginId", "아이디가 존재하지 않습니다.");
         }
-        if (!getUser.getPassword().equals(user.getPassword())) {
+        if (!getUser.getPassword().equals(password)) {
             throw new APIError("InconsistencyPassword", "비밀번호가 일치하지 않습니다.");
         }
 

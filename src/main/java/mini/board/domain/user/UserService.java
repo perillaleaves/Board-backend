@@ -31,21 +31,21 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<User> findByLoginId(User user) {
+    public Optional<User> findByLoginId(String loginId) {
 
-        return userRepository.findByLoginId(user.getLoginId());
+        return userRepository.findByLoginId(loginId);
     }
 
     @Transactional
-    public Optional<User> findByPhoneNum(User user) {
+    public Optional<User> findByPhoneNum(String phoneNum) {
 
-        return userRepository.findByPhoneNum(user.getPhoneNum());
+        return userRepository.findByPhoneNum(phoneNum);
     }
 
     @Transactional
-    public Optional<User> findByEmail(User user) {
+    public Optional<User> findByEmail(String email) {
 
-        return userRepository.findByEmail(user.getEmail());
+        return userRepository.findByEmail(email);
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import mini.board.domain.post.Post;
 import mini.board.domain.post.PostRepository;
 import mini.board.domain.user.User;
 import mini.board.exception.APIError;
+import mini.board.exception.NotLoginApiError;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ public class CommentService {
         comment.setUser(loginUser);
         comment.setPost(findPost);
         findPost.setCommentSize(++commentSize);
+        // XXX: 동시성 이슈있는데요.
 
         return commentRepository.save(comment);
     }
@@ -68,6 +70,9 @@ public class CommentService {
                 .setParameter("id", commentId)
                 .getSingleResult();
 
+        // FIXME : CommentService.findByCommentId(commentId);
+        // FIXME : PostService.findByPostId(postId);
+
         Long commentSize = comment.getPost().getCommentSize();
 
         commentRepository.delete(comment);
@@ -79,7 +84,7 @@ public class CommentService {
         User loginUser = (User) session.getAttribute("loginUser");
 
         if (loginUser == null) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+            throw new NotLoginApiError("로그인 유저가 아닙니다.");
         }
 
         if (comment.getContent().isBlank()) {
