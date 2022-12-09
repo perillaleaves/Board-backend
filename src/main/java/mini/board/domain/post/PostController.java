@@ -17,34 +17,32 @@ public class PostController {
         this.postService = postService;
     }
 
-    // 게시글 작성
+    // 9. 게시글 작성
     @PostMapping("/post/create")
     public Map<String, Object> create(@RequestBody Post post, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> error = new HashMap<>();
+        map.put("data", data);
+        map.put("error", error);
 
         try {
             postService.create(post, request);
-            map.put("data", data);
             data.put("code", "create");
             data.put("message", "게시글 작성");
-            map.put("error", error);
             error.put("code", "");
             error.put("message", "");
-            return map;
         } catch (APIError e) {
-            map.put("data", data);
             data.put("code", "");
             data.put("message", "");
-            map.put("error", error);
             error.put("code", e.getCode());
             error.put("message", e.getMessage());
-            return map;
         }
+
+        return map;
     }
 
-    // 게시글 리스트 조회
+    // 10. 게시글 리스트 조회
     @GetMapping("/posts")
     public Map<String, Object> posts() {
         Map<String, Object> map = new HashMap<>();
@@ -62,7 +60,7 @@ public class PostController {
         return map;
     }
 
-    // 게시물 상세보기
+    // 11. 게시물 상세 조회
     @GetMapping("/post/{postId}")
     public Map<String, Object> post(@PathVariable("postId") Post post) {
         Map<String, Object> map = new HashMap<>();
@@ -75,7 +73,7 @@ public class PostController {
         return map;
     }
 
-    // 게시글 수정
+    // 12. 게시글 수정
     @PutMapping("/post/{post_id}/update")
     public Map<String, Object> update(@PathVariable("post_id") Long postId, @RequestBody Post post, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
@@ -96,10 +94,11 @@ public class PostController {
             error.put("code", e.getCode());
             error.put("message", e.getMessage());
         }
+
         return map;
     }
 
-    // 게시글 삭제
+    // 16. 게시글 삭제
     @DeleteMapping("/post/{post_id}/delete")
     public Map<String, Object> delete(@PathVariable("post_id") Long postId, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
@@ -107,6 +106,7 @@ public class PostController {
         Map<String, Object> error = new HashMap<>();
         map.put("data", data);
         map.put("error", error);
+
         try {
             postService.delete(postId, request);
             data.put("code", "delete");

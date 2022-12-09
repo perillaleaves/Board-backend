@@ -56,12 +56,13 @@ public class PostService {
 
         return em.createQuery("select p from Post p join fetch p.user", Post.class)
                 .getResultList();
+
     }
 
     @Transactional
     public Optional<Post> getPost(Post post) {
 
-        Post getPost = em.createQuery("select p from Post p join fetch p.user where p.id = : id", Post.class)
+        Post getPost = em.createQuery("select p from Post p join fetch p.user join fetch p.comments where p.id = : id", Post.class)
                 .setParameter("id", post.getId())
                 .getSingleResult();
 
@@ -93,15 +94,15 @@ public class PostService {
 
         Post findPost = postRepository.findById(postId).get();
         List<Comment> comments = findPost.getComments();
-        if (comments.size() > 0) {
-            commentRepository.deleteAll(comments);
+
+        if (comments.size() == 0) {
             postRepository.delete(findPost);
         } else {
+            commentRepository.deleteAll(comments);
             postRepository.delete(findPost);
         }
 
     }
-
 
     private void validate(Post post, HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -116,7 +117,7 @@ public class PostService {
         }
 
         if (post.getTitle().length() > 30) {
-            throw new APIError("limitTitle", "30자 이하로 입력해주세요.");
+            throw new APIError("LimitTitle", "30자 이하로 입력해주세요.");
         }
 
         if (post.getContent().isBlank()) {
@@ -124,7 +125,7 @@ public class PostService {
         }
 
         if (post.getContent().length() > 1000) {
-            throw new APIError("limitContent", "1000자 이하로 입력해주세요.");
+            throw new APIError("LimitContent", "1000자 이하로 입력해주세요.");
         }
 
     }
@@ -149,7 +150,7 @@ public class PostService {
         }
 
         if (post.getTitle().length() > 30) {
-            throw new APIError("limitTitle", "30자 이하로 입력해주세요.");
+            throw new APIError("LimitTitle", "30자 이하로 입력해주세요.");
         }
 
         if (post.getContent().isBlank()) {
@@ -157,7 +158,7 @@ public class PostService {
         }
 
         if (post.getContent().length() > 1000) {
-            throw new APIError("limitContent", "1000자 이하로 입력해주세요.");
+            throw new APIError("LimitContent", "1000자 이하로 입력해주세요.");
         }
 
     }

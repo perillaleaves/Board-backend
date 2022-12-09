@@ -86,6 +86,10 @@ public class CommentService {
             throw new APIError("InvalidContent", "내용을 입력해주세요.");
         }
 
+        if (comment.getContent().length() > 50) {
+            throw new APIError("LimitContent", "50자 이하로 입력해주세요.");
+        }
+
     }
 
     private void updateValidate(Long commentId, Comment comment, HttpServletRequest request) {
@@ -105,6 +109,10 @@ public class CommentService {
 
         if (comment.getContent().isBlank()) {
             throw new APIError("InvalidContent", "내용을 입력해주세요.");
+        }
+
+        if (comment.getContent().length() > 50) {
+            throw new APIError("LimitContent", "50자 이하로 입력해주세요.");
         }
 
     }

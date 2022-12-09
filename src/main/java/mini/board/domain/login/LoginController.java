@@ -19,7 +19,7 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    // 로그인
+    // 2. 로그인
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody User user, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
@@ -51,7 +51,7 @@ public class LoginController {
 
     }
 
-    // 로그아웃
+    // 3. 로그아웃
     @PostMapping("/logout")
     public Map<String, Object> logout(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
