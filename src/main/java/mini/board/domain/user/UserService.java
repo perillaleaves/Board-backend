@@ -31,36 +31,47 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<User> findByLoginId(String loginId) {
+    public User findByLoginId(String loginId) {
 
-        return userRepository.findByLoginId(loginId);
+        if (userRepository.findByLoginId(loginId).isPresent()) {
+            throw new APIError("ExistsId", "이미 존재하는 아이디 입니다.");
+        }
+            return userRepository.findByLoginId(loginId).orElse(null);
+
     }
 
     @Transactional
-    public Optional<User> findByPhoneNum(String phoneNum) {
+    public User findByPhoneNum(String phoneNum) {
 
-        return userRepository.findByPhoneNum(phoneNum);
+        if (userRepository.findByPhoneNum(phoneNum).isPresent()) {
+            throw new APIError("ExistsPhoneNumber", "이미 존재하는 연락처 입니다.");
+        }
+        return userRepository.findByPhoneNum(phoneNum).orElse(null);
     }
 
     @Transactional
-    public Optional<User> findByEmail(String email) {
+    public User findByEmail(String email) {
 
-        return userRepository.findByEmail(email);
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new APIError("ExistsEmail", "이미 존재하는 이메일 입니다.");
+        }
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     @Transactional
     public User update(User user, HttpServletRequest request) {
 
         updateValidate(user, request);
+        HttpSession session = request.getSession();
+        User loggedUser = (User) session.getAttribute("loggedUser");
+
         LocalDateTime date = LocalDateTime.now();
-        User findUser = userRepository.findById(user.getId()).get();
+        loggedUser.setPassword(user.getPassword());
+        loggedUser.setPhoneNum(user.getPhoneNum());
+        loggedUser.setEmail(user.getEmail());
+        loggedUser.setUpdatedAt(date);
 
-        findUser.setPassword(user.getPassword());
-        findUser.setPhoneNum(user.getPhoneNum());
-        findUser.setEmail(user.getEmail());
-        findUser.setUpdatedAt(date);
-
-        return userRepository.save(findUser);
+        return userRepository.save(loggedUser);
     }
 
     private void validate(User user) {
@@ -114,9 +125,9 @@ public class UserService {
     private void updateValidate(User user, HttpServletRequest request) {
 
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
+        User loggedUser = (User) session.getAttribute("loggedUser");
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
@@ -141,6 +152,18 @@ public class UserService {
         if (!email_validate) {
             throw new APIError("FormEmail", "이메일을 양식에 맞게 입력해주세요.");
         }
+
+//        if (userRepository.findByLoginId(user.getLoginId()).isPresent()) {
+//            throw new APIError("ExistsId", "이미 존재하는 아이디 입니다.");
+//        }
+//
+//        if (userRepository.findByPhoneNum(user.getPhoneNum()).isPresent()) {
+//            throw new APIError("ExistsPhoneNumber", "이미 존재하는 연락처 입니다.");
+//        }
+//
+//        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+//            throw new APIError("ExistsEmail", "이미 존재하는 이메일 입니다.");
+//        }
     }
 
 }

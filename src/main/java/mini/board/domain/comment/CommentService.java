@@ -35,17 +35,17 @@ public class CommentService {
         LocalDateTime date = LocalDateTime.now();
 
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
+        User loggedUser = (User) session.getAttribute("loggedUser");
 
         Post findPost = postRepository.findById(postId).get();
         Long commentSize = findPost.getCommentSize();
 
         comment.setCreatedAt(date);
         comment.setUpdatedAt(date);
-        comment.setUser(loginUser);
+        comment.setUser(loggedUser);
         comment.setPost(findPost);
         findPost.setCommentSize(++commentSize);
-        // XXX: 동시성 이슈있는데요.
+        // XXX: 동시성 이슈있는데요. 프로시저
 
         return commentRepository.save(comment);
     }
@@ -81,9 +81,9 @@ public class CommentService {
 
     private void validate(Comment comment, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
+        User loggedUser = (User) session.getAttribute("loggedUser");
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new NotLoginApiError("로그인 유저가 아닙니다.");
         }
 
@@ -99,16 +99,16 @@ public class CommentService {
 
     private void updateValidate(Long commentId, Comment comment, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
-        Long userId = (Long) session.getAttribute("userId");
+        User loggedUser = (User) session.getAttribute("loggedUser");
+        Long user_id = (Long) session.getAttribute("user_id");
 
         Comment findComment = commentRepository.findById(commentId).get();
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
-        if (!(findComment.getUser().getId() == userId)) {
+        if (!(findComment.getUser().getId() == user_id)) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
@@ -124,16 +124,16 @@ public class CommentService {
 
     private void deleteValidate(Long commentId, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
-        Long userId = (Long) session.getAttribute("userId");
+        User loggedUser = (User) session.getAttribute("loggedUser");
+        Long user_id = (Long) session.getAttribute("user_id");
 
         Comment findComment = commentRepository.findById(commentId).get();
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
-        if (!(findComment.getUser().getId() == userId)) {
+        if (!(findComment.getUser().getId() == user_id)) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
