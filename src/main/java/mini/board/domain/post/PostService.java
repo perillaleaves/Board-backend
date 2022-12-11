@@ -5,7 +5,6 @@ import mini.board.domain.comment.CommentRepository;
 import mini.board.domain.login.LoginService;
 import mini.board.domain.user.User;
 import mini.board.exception.APIError;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +37,12 @@ public class PostService {
         validate(post, request);
 
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
+        User loggedUser = (User) session.getAttribute("loggedUser");
 
         LocalDateTime date = LocalDateTime.now();
         post.setCreatedAt(date);
         post.setUpdatedAt(date);
-        post.setUser(loginUser);
+        post.setUser(loggedUser);
         post.setCommentSize(0L);
 
         Post addPost = postRepository.save(post);
@@ -52,7 +51,7 @@ public class PostService {
     }
 
     @Transactional
-    public List<Post> getPosts(Pageable pageable) {
+    public List<Post> getPosts() {
 
         return em.createQuery("select p from Post p join fetch p.user", Post.class)
                 .getResultList();
@@ -60,10 +59,7 @@ public class PostService {
 
     @Transactional
     public Optional<Post> getPost(Long postId) {
-
-        Post post = em.createQuery("select p from Post p join fetch p.user join fetch p.comments where p.id = : id", Post.class)
-                .setParameter("id", postId)
-                .getSingleResult();
+        Post post = postRepository.findById(postId).get();
 
         return Optional.ofNullable(post);
     }
@@ -102,9 +98,9 @@ public class PostService {
 
     private void validate(Post post, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
+        User loggedUser = (User) session.getAttribute("loggedUser");
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
@@ -128,16 +124,16 @@ public class PostService {
 
     private void updateValidate(Long postId, Post post, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
-        Long userId = (Long) session.getAttribute("userId");
+        User loggedUser = (User) session.getAttribute("loggedUser");
+        Long user_id = (Long) session.getAttribute("user_id");
 
         Post findPost = postRepository.findById(postId).get();
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
-        if (!(findPost.getUser().getId() == userId)) {
+        if (!(findPost.getUser().getId() == user_id)) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
@@ -161,16 +157,16 @@ public class PostService {
 
     private void deleteValidate(Long postId, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        User loginUser = (User) session.getAttribute("loginUser");
-        Long userId = (Long) session.getAttribute("userId");
+        User loggedUser = (User) session.getAttribute("loggedUser");
+        Long user_id = (Long) session.getAttribute("user_id");
 
         Post findPost = postRepository.findById(postId).get();
 
-        if (loginUser == null) {
+        if (loggedUser == null) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 
-        if (!(findPost.getUser().getId() == userId)) {
+        if (!(findPost.getUser().getId() == user_id)) {
             throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
         }
 

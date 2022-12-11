@@ -1,11 +1,14 @@
 package mini.board.domain.comment;
 
+import mini.board.domain.user.UserDTO;
 import mini.board.exception.APIError;
+import mini.board.response.ApiResponse;
+import mini.board.response.ErrorResponse;
+import mini.board.response.Response;
+import mini.board.response.ValidateResponse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class CommentController {
@@ -17,78 +20,46 @@ public class CommentController {
     }
 
     // 13. 댓글 작성
-    @PostMapping("/post/{post_id}/comment/create")
-    public Map<String, Object> create(@PathVariable("post_id") Long postId, @RequestBody Comment comment, HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        Map<String, Object> success = new HashMap<>();
-        Map<String, Object> error = new HashMap<>();
-        map.put("success", success);
-        map.put("error", error);
+    @PostMapping("/post/{post_id}/comment")
+    public Response<ApiResponse> create(@PathVariable("post_id") Long postId, @RequestBody Comment comment, HttpServletRequest request) {
 
         try {
-            commentService.create(postId, comment, request);
-            success.put("code", "create");
-            success.put("message", "댓글 작성");
-            error.put("code", "");
-            error.put("message", "");
+            Comment addComment = commentService.create(postId, comment, request);
+            CommentDTO commentDTO = new CommentDTO(addComment.getId(), addComment.getContent(), addComment.getCreatedAt(), addComment.getUpdatedAt(),
+                                        new UserDTO(addComment.getUser().getId(), addComment.getUser().getName(), addComment.getUser().getCreatedAt(), addComment.getUser().getUpdatedAt()));
+            return new Response<>(new ApiResponse(commentDTO));
         } catch (APIError e) {
-            success.put("code", "");
-            success.put("message", "");
-            error.put("code", e.getCode());
-            error.put("message", e.getMessage());
+            return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }
 
-        return map;
     }
 
     // 14. 댓글 수정
-    @PutMapping("/comment/{comment_id}/update")
-    public Map<String, Object> update(@PathVariable("comment_id") Long commentId, @RequestBody Comment comment, HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        Map<String, Object> success = new HashMap<>();
-        Map<String, Object> error = new HashMap<>();
-        map.put("success", success);
-        map.put("error", error);
+    @PutMapping("/comment/{comment_id}")
+    public Response<ApiResponse> update(@PathVariable("comment_id") Long commentId, @RequestBody Comment comment, HttpServletRequest request) {
 
         try {
-            commentService.update(commentId, comment, request);
-            success.put("code", "update");
-            success.put("message", "댓글 수정");
-            error.put("code", "");
-            error.put("message", "");
+            Comment updatedComment = commentService.update(commentId, comment, request);
+            CommentDTO commentDTO = new CommentDTO(updatedComment.getId(), updatedComment.getContent(), updatedComment.getCreatedAt(), updatedComment.getUpdatedAt(),
+                    new UserDTO(updatedComment.getUser().getId(), updatedComment.getUser().getName(), updatedComment.getUser().getCreatedAt(), updatedComment.getUser().getUpdatedAt()));
+            return new Response<>(new ApiResponse(commentDTO));
         } catch (APIError e) {
-            success.put("code", "");
-            success.put("message", "");
-            error.put("code", e.getCode());
-            error.put("message", e.getMessage());
+            return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }
 
-        return map;
     }
 
     // 15. 댓글 삭제
-    @DeleteMapping("/comment/{comment_id}/delete")
-    public Map<String, Object> delete(@PathVariable("comment_id") Long commentId, HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
-        Map<String, Object> success = new HashMap<>();
-        Map<String, Object> error = new HashMap<>();
-        map.put("success", success);
-        map.put("error", error);
+    @DeleteMapping("/comment/{comment_id}")
+    public Response<ApiResponse> delete(@PathVariable("comment_id") Long commentId, HttpServletRequest request) {
 
         try {
             commentService.delete(commentId, request);
-            success.put("code", "delete");
-            success.put("message", "댓글 삭제");
-            error.put("code", "");
-            error.put("message", "");
+            return new Response<>(new ValidateResponse("delete", "게시글 삭제"));
         } catch (APIError e) {
-            success.put("code", "");
-            success.put("message", "");
-            error.put("code", e.getCode());
-            error.put("message", e.getMessage());
+            return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }
 
-        return map;
     }
 
 }
