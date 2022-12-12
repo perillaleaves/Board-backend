@@ -14,13 +14,9 @@ public class ApiResponse {
 
     private User user;
 
-    private Post post;
-
     private PostDTO postDTO;
 
     private List<PostDTO> postDTOs = new ArrayList<>();
-
-    private Comment comment;
 
     private CommentDTO commentDTO;
 
@@ -28,7 +24,6 @@ public class ApiResponse {
         return user;
     }
 
-    public Post getPost() { return post; }
 
     public PostDTO getPostDTO() {
         return postDTO;
@@ -38,17 +33,11 @@ public class ApiResponse {
         return postDTOs;
     }
 
-    public Comment getComment() {
-        return comment;
-    }
-
     public CommentDTO getCommentDTO() {
         return commentDTO;
     }
 
     public ApiResponse(User user) { this.user = user; }
-
-    public ApiResponse(Post post) { this.post = post; }
 
     public ApiResponse(PostDTO postDTO) {
         this.postDTO = postDTO;
@@ -56,10 +45,6 @@ public class ApiResponse {
 
     public ApiResponse(List<PostDTO> postDTOs) {
         this.postDTOs = postDTOs;
-    }
-
-    public ApiResponse(Comment comment) {
-        this.comment = comment;
     }
 
     public ApiResponse(CommentDTO commentDTO) {

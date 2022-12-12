@@ -34,7 +34,7 @@ public class UserController {
 
     // 5. 유저 연락처 중복 확인
     @GetMapping("/overlap/phonenumber")
-    public Response<ApiResponse> overlapPhoneNum(@ModelAttribute User user) {
+    public Response<ValidateResponse> overlapPhoneNum(@ModelAttribute User user) {
 
         try {
             userService.findByPhoneNum(user.getPhoneNum());
@@ -47,7 +47,7 @@ public class UserController {
 
     // 6. 유저 이메일 중복 확인
     @GetMapping("/overlap/email")
-    public Response<ApiResponse> overlapEmail(@ModelAttribute User user) {
+    public Response<ValidateResponse> overlapEmail(@ModelAttribute User user) {
 
         try {
             userService.findByEmail(user.getEmail());
@@ -59,21 +59,21 @@ public class UserController {
 
     // 7. 로그인한 유저 정보 조회
     @GetMapping("/user")
-    public Response<ApiResponse> userProfile(HttpServletRequest request) {
+    public Response<User> userProfile(HttpServletRequest request) {
 
         HttpSession session = request.getSession();
         User loggedUser = (User) session.getAttribute("loggedUser");
 
-        return new Response<>(new ApiResponse(loggedUser));
+        return new Response<>(loggedUser);
     }
 
     // 8. 로그인한 유저 정보 수정
     @PutMapping("/user")
-    public Response<ApiResponse> userProfileUpdate(@RequestBody User user, HttpServletRequest request) {
+    public Response<User> userProfileUpdate(@RequestBody UserDTO userDTO, HttpServletRequest request) {
 
         try {
-            User updateUser = userService.update(user, request);
-            return new Response<>(new ApiResponse(updateUser));
+            User updateUser = userService.update(userDTO, request);
+            return new Response<>(updateUser);
         } catch (APIError e) {
             return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }

@@ -106,6 +106,19 @@ public class User {
     public User() {
     }
 
+    public User(Long id) {
+        this.id = id;
+    }
+
+    public User(Long id, String loginId, String password, String name, String phoneNum, String email) {
+        this.id = id;
+        this.loginId = loginId;
+        this.password = password;
+        this.name = name;
+        this.phoneNum = phoneNum;
+        this.email = email;
+    }
+
     public User(Long id, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.loginId = loginId;
@@ -115,6 +128,6 @@ public class User {
         this.email = email;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-
     }
+
 }

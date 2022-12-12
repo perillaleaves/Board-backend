@@ -53,6 +53,22 @@ public class PostDTO {
         return comments;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCommentSize(Long commentSize) {
+        this.commentSize = commentSize;
+    }
+
+    public void setUserDTO(UserDTO userDTO) {
+        this.userDTO = userDTO;
+    }
+
     public PostDTO() {
     }
 
