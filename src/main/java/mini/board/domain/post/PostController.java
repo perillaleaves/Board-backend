@@ -9,7 +9,6 @@ import mini.board.response.ValidateResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +25,11 @@ public class PostController {
 
     // 9. 게시글 작성
     @PostMapping("/post")
-    public Response<ApiResponse> create(@RequestBody Post post, HttpServletRequest request) {
+    public Response<Post> create(@RequestBody Post post, HttpServletRequest request) {
 
         try {
             Post findPost = postService.create(post, request);
-            return new Response<>(new ApiResponse(findPost));
+            return new Response<>(findPost);
         } catch (APIError e) {
             return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }

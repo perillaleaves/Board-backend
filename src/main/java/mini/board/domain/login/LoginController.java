@@ -1,5 +1,6 @@
 package mini.board.domain.login;
 
+import mini.board.domain.user.UserDTO;
 import mini.board.response.ErrorResponse;
 import mini.board.response.Response;
 import mini.board.response.ApiResponse;
@@ -25,11 +26,11 @@ public class LoginController {
 
     // 1. 회원가입
     @PostMapping("/signup")
-    public Response<ApiResponse> signup(@RequestBody User user) {
+    public Response<User> signup(@RequestBody UserDTO userDTO) {
 
         try {
-            User newUser = userService.create(user);
-            return new Response<>(new ApiResponse(newUser));
+            User newUser = userService.create(userDTO);
+            return new Response<>(newUser);
         } catch (APIError e) {
             return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }
@@ -39,15 +40,15 @@ public class LoginController {
     // 2. 로그인
     @PostMapping("/login")
     // FIXME: User -> DTO 로
-    public Response<ApiResponse> login(@RequestBody User user, HttpServletRequest request) {
+    public Response<User> login(@RequestBody UserDTO userDTO, HttpServletRequest request) {
 
         try {
-            User loggedUser = loginService.signIn(user.getLoginId(), user.getPassword());
+            User loggedUser = loginService.signIn(userDTO.getLoginId(), userDTO.getPassword());
             HttpSession session = request.getSession();
             session.setAttribute("loggedUser", loggedUser);
             session.setAttribute("user_id", loggedUser.getId());
 
-            return new Response<>(new ApiResponse(loggedUser));
+            return new Response<>(loggedUser);
         } catch (APIError e) {
             return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }

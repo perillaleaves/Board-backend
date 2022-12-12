@@ -20,13 +20,14 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final LoginService loginService;
     private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository, LoginService loginService, CommentRepository commentRepository) {
+    private final LoginService loginService;
+
+    public PostService(PostRepository postRepository, CommentRepository commentRepository, LoginService loginService) {
         this.postRepository = postRepository;
-        this.loginService = loginService;
         this.commentRepository = commentRepository;
+        this.loginService = loginService;
     }
 
     @PersistenceContext
@@ -36,13 +37,16 @@ public class PostService {
     public Post create(Post post, HttpServletRequest request) {
         validate(post, request);
 
-        HttpSession session = request.getSession();
-        User loggedUser = (User) session.getAttribute("loggedUser");
+//        HttpSession session = request.getSession();
+//        User loggedUser = (User) session.getAttribute("loggedUser");
+//        Long user_id = (Long) session.getAttribute("user_id");
+//
+//        User user = loginService.signIn(loggedUser.getLoginId(), loggedUser.getPassword());
 
         LocalDateTime date = LocalDateTime.now();
         post.setCreatedAt(date);
         post.setUpdatedAt(date);
-        post.setUser(loggedUser);
+//        post.setUser(loggedUser);
         post.setCommentSize(0L);
 
         Post addPost = postRepository.save(post);
@@ -81,11 +85,6 @@ public class PostService {
     @Transactional
     public void delete(Long postId, HttpServletRequest request) {
         deleteValidate(postId, request);
-
-//        Post findPost = em.createQuery("select p from Post p join fetch p.comments where p.id = : id", Post.class)
-//                .setParameter("id", postId)
-//                .getSingleResult();
-//        List<Comment> comments = findPost.getComments();
 
         Post findPost = postRepository.findById(postId).get();
         List<Comment> comments = findPost.getComments();
