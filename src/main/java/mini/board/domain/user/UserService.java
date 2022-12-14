@@ -19,6 +19,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+
     @Transactional
     public User create(UserDTO userDTO) {
         validate(userDTO);
@@ -26,26 +27,13 @@ public class UserService {
         LocalDateTime date = LocalDateTime.now();
         User user = new User(userDTO.getUserId(), userDTO.getLoginId(), userDTO.getPassword(), userDTO.getName(), userDTO.getPhoneNum(), userDTO.getEmail(), userDTO.getCreatedAt(), userDTO.getUpdatedAt());
         user.setCreatedAt(date);
-        user.setUpdatedAt(date);
 
         return userRepository.save(user);
     }
 
     @Transactional
-    public User findByLoginId(String loginId) {
-
-        if (loginId.length() == 0) {
-            throw new APIError("InvalidId", "아이디를 입력해주세요.");
-        }
-        if (loginId.length() < 8) {
-            throw new APIError("LengthId", "아이디를 8글자 이상 입력해주세요.");
-        }
-        if (userRepository.findByLoginId(loginId).isPresent()) {
-            throw new APIError("ExistsId", "이미 존재하는 아이디 입니다.");
-        }
-
+    public User findByLoginIdOrNull(String loginId) {
         return userRepository.findByLoginId(loginId).orElse(null);
-
     }
 
     @Transactional
@@ -79,11 +67,12 @@ public class UserService {
     }
 
     @Transactional
-    public User update(UserDTO userDTO, HttpServletRequest request) {
+    public User update(Long user_id, UserDTO userDTO, HttpServletRequest request) {
 
         updateValidate(userDTO, request);
-        HttpSession session = request.getSession();
-        User loggedUser = (User) session.getAttribute("loggedUser");
+//        HttpSession session = request.getSession();
+//        User loggedUser = (User) session.getAttribute("loggedUser");
+        User loggedUser = userRepository.findById(user_id).orElse(null);
 
         LocalDateTime date = LocalDateTime.now();
         loggedUser.setPassword(userDTO.getPassword());
