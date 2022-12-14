@@ -1,11 +1,8 @@
 package mini.board.domain.login;
 
-import mini.board.domain.user.UserDTO;
+import mini.board.domain.user.*;
 import mini.board.response.ErrorResponse;
 import mini.board.response.Response;
-import mini.board.response.ApiResponse;
-import mini.board.domain.user.User;
-import mini.board.domain.user.UserService;
 import mini.board.exception.APIError;
 import mini.board.response.ValidateResponse;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +23,13 @@ public class LoginController {
 
     // 1. 회원가입
     @PostMapping("/signup")
-    public Response<User> signup(@RequestBody UserDTO userDTO) {
+    public Response<UserSignUpRequest> signup(@RequestBody UserDTO userDTO) {
 
         try {
-            User newUser = userService.create(userDTO);
-            return new Response<>(newUser);
+            User addUser = userService.create(userDTO);
+            UserSignUpRequest user = new UserSignUpRequest(addUser.getId(), addUser.getLoginId(), addUser.getName(), addUser.getPhoneNum(), addUser.getEmail(), addUser.getCreatedAt());
+
+            return new Response<>(user);
         } catch (APIError e) {
             return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));
         }
@@ -39,7 +38,6 @@ public class LoginController {
 
     // 2. 로그인
     @PostMapping("/login")
-    // FIXME: User -> DTO 로
     public Response<User> login(@RequestBody UserDTO userDTO, HttpServletRequest request) {
 
         try {
@@ -57,7 +55,7 @@ public class LoginController {
 
     // 3. 로그아웃
     @PostMapping("/logout")
-    public Response<ApiResponse> logout(HttpServletRequest request) {
+    public Response<ValidateResponse> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session != null) {

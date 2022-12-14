@@ -23,7 +23,7 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
-    private Long commentSize;
+    private Long commentSize = 0L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

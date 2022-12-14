@@ -3,15 +3,15 @@ package mini.board.domain.post;
 import mini.board.domain.comment.Comment;
 import mini.board.domain.comment.CommentRepository;
 import mini.board.domain.login.LoginService;
-import mini.board.domain.user.User;
+import mini.board.domain.user.UserRepository;
 import mini.board.exception.APIError;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +19,14 @@ import java.util.Optional;
 @Service
 public class PostService {
 
+    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
     private final LoginService loginService;
 
-    public PostService(PostRepository postRepository, CommentRepository commentRepository, LoginService loginService) {
+    public PostService(UserRepository userRepository, PostRepository postRepository, CommentRepository commentRepository, LoginService loginService) {
+        this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.loginService = loginService;
@@ -41,8 +43,6 @@ public class PostService {
 //        User loggedUser = (User) session.getAttribute("loggedUser");
 //        Long user_id = (Long) session.getAttribute("user_id");
 //
-//        User user = loginService.signIn(loggedUser.getLoginId(), loggedUser.getPassword());
-
         LocalDateTime date = LocalDateTime.now();
         post.setCreatedAt(date);
         post.setUpdatedAt(date);
@@ -55,10 +55,9 @@ public class PostService {
     }
 
     @Transactional
-    public List<Post> getPosts() {
+    public List<Post> findAll(Pageable pageable) {
 
-        return em.createQuery("select p from Post p join fetch p.user", Post.class)
-                .getResultList();
+        return postRepository.findPosts(pageable);
     }
 
     @Transactional
@@ -96,12 +95,12 @@ public class PostService {
     }
 
     private void validate(Post post, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User loggedUser = (User) session.getAttribute("loggedUser");
-
-        if (loggedUser == null) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-        }
+//        HttpSession session = request.getSession();
+//        User loggedUser = (User) session.getAttribute("loggedUser");
+//
+//        if (loggedUser == null) {
+//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+//        }
 
         if (post.getTitle().isBlank()) {
             throw new APIError("InvalidTitle", "제목을 입력해주세요.");
@@ -122,19 +121,19 @@ public class PostService {
     }
 
     private void updateValidate(Long postId, Post post, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User loggedUser = (User) session.getAttribute("loggedUser");
-        Long user_id = (Long) session.getAttribute("user_id");
-
+//        HttpSession session = request.getSession();
+//        User loggedUser = (User) session.getAttribute("loggedUser");
+//        Long user_id = (Long) session.getAttribute("user_id");
+//
         Post findPost = postRepository.findById(postId).get();
-
-        if (loggedUser == null) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-        }
-
-        if (!(findPost.getUser().getId() == user_id)) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-        }
+//
+//        if (loggedUser == null) {
+//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+//        }
+//
+//        if (!(findPost.getUser().getId() == user_id)) {
+//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+//        }
 
         if (post.getTitle().isBlank()) {
             throw new APIError("InvalidTitle", "제목을 입력해주세요.");
@@ -155,19 +154,19 @@ public class PostService {
     }
 
     private void deleteValidate(Long postId, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User loggedUser = (User) session.getAttribute("loggedUser");
-        Long user_id = (Long) session.getAttribute("user_id");
-
-        Post findPost = postRepository.findById(postId).get();
-
-        if (loggedUser == null) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-        }
-
-        if (!(findPost.getUser().getId() == user_id)) {
-            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-        }
+//        HttpSession session = request.getSession();
+//        User loggedUser = (User) session.getAttribute("loggedUser");
+//        Long user_id = (Long) session.getAttribute("user_id");
+//
+//        Post findPost = postRepository.findById(postId).get();
+//
+//        if (loggedUser == null) {
+//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+//        }
+//
+//        if (!(findPost.getUser().getId() == user_id)) {
+//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+//        }
 
     }
 

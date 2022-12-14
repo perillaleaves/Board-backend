@@ -2,25 +2,22 @@ package mini.board.domain.user;
 
 import java.time.LocalDateTime;
 
-public class UserDTO {
+public class UserLoginRequest {
 
     private Long userId;
     private String loginId;
-    private String password;
     private String name;
     private String phoneNum;
     private String email;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Long getUserId() { return userId; }
+    public Long getUserId() {
+        return userId;
+    }
 
     public String getLoginId() {
         return loginId;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getName() {
@@ -43,35 +40,9 @@ public class UserDTO {
         return updatedAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public UserDTO() {
-    }
-
-
-
-    public UserDTO(String name) {
-        this.name = name;
-    }
-
-    public UserDTO(Long userId, String name, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.userId = userId;
-        this.name = name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-
-    public UserDTO(Long userId, String loginId, String password, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserLoginRequest(Long userId, String loginId, String name, String phoneNum, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.loginId = loginId;
-        this.password = password;
         this.name = name;
         this.phoneNum = phoneNum;
         this.email = email;

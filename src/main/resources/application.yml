@@ -16,7 +16,9 @@ spring:
       show-sql: true
       format-sql: true
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 10
       dialect: org.hibernate.dialect.MySQL8InnoDBDialect
 logging:
   level:
