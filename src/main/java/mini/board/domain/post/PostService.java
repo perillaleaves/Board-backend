@@ -3,6 +3,7 @@ package mini.board.domain.post;
 import mini.board.domain.comment.Comment;
 import mini.board.domain.comment.CommentRepository;
 import mini.board.domain.login.LoginService;
+import mini.board.domain.user.User;
 import mini.board.domain.user.UserRepository;
 import mini.board.exception.APIError;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -95,12 +97,12 @@ public class PostService {
     }
 
     private void validate(Post post, HttpServletRequest request) {
-//        HttpSession session = request.getSession();
-//        User loggedUser = (User) session.getAttribute("loggedUser");
-//
-//        if (loggedUser == null) {
-//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-//        }
+        HttpSession session = request.getSession();
+        User loggedUser = (User) session.getAttribute("loggedUser");
+
+        if (loggedUser == null) {
+            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+        }
 
         if (post.getTitle().isBlank()) {
             throw new APIError("InvalidTitle", "제목을 입력해주세요.");
@@ -121,19 +123,19 @@ public class PostService {
     }
 
     private void updateValidate(Long postId, Post post, HttpServletRequest request) {
-//        HttpSession session = request.getSession();
-//        User loggedUser = (User) session.getAttribute("loggedUser");
-//        Long user_id = (Long) session.getAttribute("user_id");
-//
+        HttpSession session = request.getSession();
+        User loggedUser = (User) session.getAttribute("loggedUser");
+        Long user_id = (Long) session.getAttribute("user_id");
+
         Post findPost = postRepository.findById(postId).get();
-//
-//        if (loggedUser == null) {
-//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-//        }
-//
-//        if (!(findPost.getUser().getId() == user_id)) {
-//            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
-//        }
+
+        if (loggedUser == null) {
+            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+        }
+
+        if (!(findPost.getUser().getId() == user_id)) {
+            throw new APIError("NotLogin", "로그인 유저가 아닙니다.");
+        }
 
         if (post.getTitle().isBlank()) {
             throw new APIError("InvalidTitle", "제목을 입력해주세요.");
