@@ -25,7 +25,7 @@ public class CommentController {
         try {
             Comment addComment = commentService.create(postId, comment, request);
             CommentDTO commentDTO = new CommentDTO(addComment.getId(), addComment.getContent(), addComment.getCreatedAt(), addComment.getUpdatedAt(),
-                                        new UserDTO(addComment.getUser().getId(), addComment.getUser().getName(), addComment.getUser().getCreatedAt(), addComment.getUser().getUpdatedAt()));
+                    new UserDTO(addComment.getUser().getId(), addComment.getUser().getName(), addComment.getUser().getCreatedAt(), addComment.getUser().getUpdatedAt()));
             return new Response<>(commentDTO);
         } catch (APIError e) {
             return new Response<>(new ErrorResponse(e.getCode(), e.getMessage()));

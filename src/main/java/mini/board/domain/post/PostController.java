@@ -44,7 +44,7 @@ public class PostController {
         List<Post> posts = postService.findAll(pageable);
         List<PostDTO> postDTOs = new ArrayList<>();
         int postSize = postRepository.findAll().size();
-        int lastPage =  Math.max((int)Math.ceil(postSize / 5), 1);
+        int lastPage = Math.max((int) Math.ceil(postSize / 5), 1);
 
         for (Post post : posts) {
             PostDTO postDTO = PostDTO.boardList(post);
@@ -92,8 +92,6 @@ public class PostController {
         }
 
     }
-
-
 
 
 }

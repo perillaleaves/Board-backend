@@ -13,7 +13,9 @@ public class UserDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Long getUserId() { return userId; }
+    public Long getUserId() {
+        return userId;
+    }
 
     public String getLoginId() {
         return loginId;
@@ -53,7 +55,6 @@ public class UserDTO {
 
     public UserDTO() {
     }
-
 
 
     public UserDTO(String name) {

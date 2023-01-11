@@ -41,9 +41,13 @@ public class PostDTO {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
-    public Long getCommentSize() { return commentSize; }
+    public Long getCommentSize() {
+        return commentSize;
+    }
 
     public UserDTO getUserDTO() {
         return userDTO;
@@ -100,8 +104,8 @@ public class PostDTO {
 
 
     public static PostDTO board(Post post) {
-        PostDTO postDto = new PostDTO(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),post.getUpdatedAt(), post.getCommentSize(),
-        new UserDTO(post.getUser().getId(), post.getUser().getName(), post.getUser().getCreatedAt(), post.getUser().getUpdatedAt()),
+        PostDTO postDto = new PostDTO(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(), post.getUpdatedAt(), post.getCommentSize(),
+                new UserDTO(post.getUser().getId(), post.getUser().getName(), post.getUser().getCreatedAt(), post.getUser().getUpdatedAt()),
                 post.getComments().stream().map(comment ->
                         new CommentDTO(comment.getId(), comment.getContent(), comment.getCreatedAt(), comment.getUpdatedAt(),
                                 new UserDTO(comment.getUser().getName()))).toList());
