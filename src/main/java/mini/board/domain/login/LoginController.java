@@ -1,11 +1,16 @@
 package mini.board.domain.login;
 
-import mini.board.domain.user.*;
+import mini.board.domain.user.User;
+import mini.board.domain.user.UserDTO;
+import mini.board.domain.user.UserService;
+import mini.board.domain.user.UserSignUpRequest;
+import mini.board.exception.APIError;
 import mini.board.response.ErrorResponse;
 import mini.board.response.Response;
-import mini.board.exception.APIError;
 import mini.board.response.ValidateResponse;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
